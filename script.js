@@ -4,7 +4,8 @@ const width = canvas.width;
 const height = canvas.height;
 
 const num_boids = 10;
-const detection_radius = 50;
+const detection_radius = 100;
+const alignment_rate = 0.01;
 
 ctx.fillStyle = "blue";
 
@@ -31,7 +32,7 @@ class Boid {
     let closest_y = 0;
     let num = 0;
     for (let boid of neighbors) {
-      if (Math.pow(Math.pow(boid.x - this.x, 2) + Math.pow(boid.y - this.y), 1 / 2) < detection_radius) {
+      if (Math.pow(Math.pow(boid.x - this.x, 2) + Math.pow(boid.y - this.y, 2), 1 / 2) < detection_radius) {
         avg_x += boid.x;
         avg_y += boid.y;
         avg_dx += boid.dx;
@@ -41,18 +42,14 @@ class Boid {
         num++;
       }
     }
+    console.log(num);
     if (num > 0) {
       avg_x /= num;
       avg_y /= num;
       avg_dx /= num;
       avg_dy /= num;
-      this.dx = this.dx / 4 + avg_dx * 3 / 4;
-      this.dy = this.dy / 4 + avg_dy * 3 / 4;
-      console.log(avg_x, avg_y)
-      /*
-      this.dx += detection_distance - (closest_x - this.x);
-      this.dy += detection_distance - (closest_y - this.y);
-      */
+      this.dx = this.dx * (1 - alignment_rate) + avg_dx * alignment_rate;
+      this.dy = this.dy * (1 - alignment_rate) + avg_dy * alignment_rate;
     }
     this.x = (this.x + this.dx + width) % width;
     this.y = (this.y + this.dy + height) % height;
