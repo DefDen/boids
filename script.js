@@ -15,15 +15,17 @@ class Boid {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.v = Math.random() * 2 * Boid.max_initial_velocity - (Boid.max_initial_velocity / 2);
-    this.r = Math.random() * 2 * Math.PI;
+    let v = Math.random() * Boid.max_initial_velocity;
+    let r = Math.random() * 2 * Math.PI;
+    this.dx = v * Math.cos(r);
+    this.dy = v * Math.sin(r);
   }
 
   draw() {
-    this.x += this.v * Math.cos(this.r);
-    this.y += this.v * Math.sin(this.r);
-    this.x = (this.x + width) % width
-    this.y = (this.y + height) % height
+    this.x += this.dx;
+    this.x = (this.x + width) % width;
+    this.y += this.dy;
+    this.y = (this.y + height) % height;
     ctx.fillRect(this.x, this.y, Boid.size, Boid.size)
   }
 }
