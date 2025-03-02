@@ -6,6 +6,8 @@ const height = canvas.height;
 const num_boids = 10;
 const detection_radius = 100;
 const alignment_rate = 0.01;
+const separation_rate = 0.001;
+const cohesion_rate = 0.01;
 
 ctx.fillStyle = "blue";
 
@@ -28,17 +30,28 @@ class Boid {
     let avg_y = 0;
     let avg_dx = 0;
     let avg_dy = 0;
-    let closest_x = 0;
-    let closest_y = 0;
+    let separation_x = 0;
+    let separation_y = 0;
     let num = 0;
     for (let boid of neighbors) {
+      if (boid === this) {
+        continue;
+      }
       if (Math.pow(Math.pow(boid.x - this.x, 2) + Math.pow(boid.y - this.y, 2), 1 / 2) < detection_radius) {
         avg_x += boid.x;
         avg_y += boid.y;
         avg_dx += boid.dx;
         avg_dy += boid.dy;
-        closest_x = Math.min(closest_x, boid.x);
-        closest_y = Math.min(closest_y, boid.y);
+        if (boid.x === this.x) {
+          separation_x += 1.5;
+        } else {
+          separation_x += 1 / (boid.x - this.x)
+        }
+        if (boid.y === this.y) {
+          separation_y += 1.5;
+        } else {
+          separation_y += 1 / (boid.y - this.y)
+        }
         num++;
       }
     }
@@ -48,8 +61,12 @@ class Boid {
       avg_y /= num;
       avg_dx /= num;
       avg_dy /= num;
+      separation_x /= num;
+      separation_y /= num;
       this.dx = this.dx * (1 - alignment_rate) + avg_dx * alignment_rate;
       this.dy = this.dy * (1 - alignment_rate) + avg_dy * alignment_rate;
+      this.dx += separation_rate * separation_x;
+      this.dy += separation_rate * separation_y;
     }
     this.x = (this.x + this.dx + width) % width;
     this.y = (this.y + this.dy + height) % height;
