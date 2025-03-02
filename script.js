@@ -3,11 +3,11 @@ const ctx = canvas.getContext("2d");
 const width = canvas.width;
 const height = canvas.height;
 
-const num_boids = 10;
+const num_boids = 20;
 const detection_radius = 100;
 const alignment_rate = 0.01;
-const separation_rate = 0.001;
-const cohesion_rate = 0.01;
+const separation_rate = 0.5;
+const cohesion_rate = 0.005;
 
 ctx.fillStyle = "blue";
 
@@ -67,6 +67,8 @@ class Boid {
       this.dy = this.dy * (1 - alignment_rate) + avg_dy * alignment_rate;
       this.dx += separation_rate * separation_x;
       this.dy += separation_rate * separation_y;
+      this.dx -= cohesion_rate * (this.x - avg_x);
+      this.dy -= cohesion_rate * (this.y - avg_y);
     }
     this.x = (this.x + this.dx + width) % width;
     this.y = (this.y + this.dy + height) % height;
@@ -100,8 +102,8 @@ const boids = [];
 let grid = [];
 let next_grid = [];
 for (let i = 0; i < num_boids; i++) {
-  let x = width / 2;
-  let y = height / 2;
+  let x = Math.random() * width;
+  let y = Math.random() * height;
   boids[i] = new Boid(x, y);
   addToGrid(boids[i], grid);
 }
