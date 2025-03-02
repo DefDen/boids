@@ -3,13 +3,13 @@ const ctx = canvas.getContext("2d");
 const width = canvas.width;
 const height = canvas.height;
 
-const num_boids = 1000;
+const num_boids = 10;
 
 ctx.fillStyle = "blue";
 
 class Boid {
 
-  static size = 3;
+  static size = 15;
   static max_initial_velocity = 5;
 
   constructor(x, y) {
@@ -22,11 +22,15 @@ class Boid {
   }
 
   draw() {
-    this.x += this.dx;
-    this.x = (this.x + width) % width;
-    this.y += this.dy;
-    this.y = (this.y + height) % height;
-    ctx.fillRect(this.x, this.y, Boid.size, Boid.size)
+    this.x = (this.x + this.dx + width) % width;
+    this.y = (this.y + this.dy + height) % height;
+
+    let r = Math.atan2(this.dy, this.dx);
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x + Boid.size * Math.cos(r + 3 * Math.PI / 4), this.y + Boid.size * Math.sin(r + 3 * Math.PI / 4));
+    ctx.lineTo(this.x + Boid.size * Math.cos(r - 3 * Math.PI / 4), this.y + Boid.size * Math.sin(r - 3 * Math.PI / 4));
+    ctx.fill();
   }
 }
 
